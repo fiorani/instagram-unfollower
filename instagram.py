@@ -7,7 +7,7 @@ from time import sleep
 
 # Crea un'istanza di webdriver per Edge
 driver = webdriver.Edge()
-username = "nome_utente"
+username = "username"
 password = "password"
 
 # login di instaram
@@ -25,28 +25,8 @@ WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//a[@href
 sleep(2)
 
 # vai ai following
-WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//a[@href='/"+username+"/following/']"))).click()
 sleep(2)
 num = driver.find_elements(By.XPATH,"//span[contains(@class, '_ac2a')]")
-following_list = []
-count = 0
-while True:
-    try:
-        elements = driver.find_elements(By.XPATH,"//span/div")
-        for element in elements:
-            count += 1
-            friend_username = element.text
-            if "Italiano" not in friend_username and friend_username not in following_list:
-                following_list.append(friend_username)
-        driver.execute_script("arguments[0].scrollIntoView(true);", elements[-1])
-        sleep(2)
-        if count > int(num[2].text):
-            break
-    except NoSuchElementException:
-        continue
-driver.find_elements(By.XPATH, "//button[contains(@class, '_abl-')]")[1].click()
-print("following_list")
-print(following_list)
 
 # vai ai follower
 WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//a[@href='/"+username+"/followers/']"))).click()
@@ -72,9 +52,6 @@ print("follower_list")
 print(follower_list)
 
 # vai ai following e smette di seguire chi non ti segue
-unfollower_list = [friend_username for friend_username in following_list if friend_username not in follower_list]
-print("unfollower_list")
-print(unfollower_list)
 WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//a[@href='/"+username+"/following/']"))).click()
 sleep(2)
 count = 0
@@ -84,7 +61,7 @@ while True:
         for element in elements:
             count += 1
             friend_username = element.find_element(By.XPATH,".//span/div").text
-            if "Italiano" not in friend_username and friend_username in unfollower_list:
+            if "Italiano" not in friend_username and friend_username not in follower_list:
                 element.find_element(By.XPATH,".//button[contains(@class, '_acan')]").click()
                 driver.find_element(By.XPATH,"//button[text()='Non seguire più']").click()
                 sleep(2)
